@@ -9,6 +9,8 @@
 class UCameraComponent;
 class USpringArmComponent;
 class USInteractionComponent;
+class UAnimMontage;
+class USAttributeComponent;
 
 UCLASS()
 class SECONDCOURSE_API ASCharacter : public ACharacter
@@ -30,8 +32,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USInteractionComponent* InteractionComp;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackAnim;
+
+	FTimerHandle TimerHandle_Attack1;
 
 protected:
 	// Called when the game starts or when spawned
@@ -42,6 +52,8 @@ protected:
 	void MoveRight(float Value);
 
 	void Action1();
+
+	void TimeEllaps();
 
 
 public:	
