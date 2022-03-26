@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "SCharacter.h"
@@ -100,10 +100,40 @@ void ASCharacter::Action1()
 void ASCharacter::TimeEllaps()
 {
 	FVector HandLocatoin = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocatoin);
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
+
+	//Shapetrace
+	FCollisionShape Shape;
+	Shape.SetSphere(10.0f);
+
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	FCollisionObjectQueryParams ObjParams;
+	ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	FVector TraceStart = CameraComp->GetComponentLocation();
+
+	//In die richtung die du schaust (Rotator) von der Position der Kamera 500 units weg
+	FVector TraceEnd = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000);
+
+	FHitResult Hit;
+
+	if(GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjParams, Shape, Params))
+	{
+		TraceEnd = Hit.ImpactPoint;
+	}
+
+	//find new direction/rotation from Hand pointing to impact point in World.
+	FRotator ProjRotation = FRotationMatrix::MakeFromX(TraceEnd - HandLocatoin).Rotator();
+
+	FTransform SpawnTM = FTransform(ProjRotation, HandLocatoin);
+
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
