@@ -30,6 +30,10 @@ protected:
 	
 
 public:	
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
+
 	USAttributeComponent();
 
 	UPROPERTY(BlueprintAssignable)

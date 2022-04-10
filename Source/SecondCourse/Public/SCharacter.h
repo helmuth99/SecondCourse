@@ -55,6 +55,11 @@ protected:
 
 	void TimeEllaps();
 
+	UFUNCTION()
+	void OnHealthChanged(USAttributeComponent* OwningComp, AActor* InstigatorActor, float NewHealth, float Delta);
+
+	virtual void PostInitializeComponents() override;
+
 
 public:	
 	// Called every frame

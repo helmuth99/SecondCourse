@@ -3,6 +3,11 @@
 
 #include "SAttributeComponent.h"
 
+bool USAttributeComponent::IsAlive() const
+{
+	return Health > 0.0f;
+}
+
 // Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent()
 {
