@@ -8,6 +8,10 @@
 #include "NiagaraSystem.h"
 #include <NiagaraComponent.h>
 #include "SAttributeComponent.h"
+#include "SGameplayFunctionLibrary.h"
+#include "ActionComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "SActionEffect.h"
 
 
 // Sets default values
@@ -32,33 +36,35 @@ ASProjectile::ASProjectile()
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
 
+	DamageAmount = 20;
 }
 
-// Called when the game starts or when spawned
-void ASProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
 
 void ASProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
-		if (AttributeComp)
-		{
-			AttributeComp->ApplyHealthChange(-20.0f);
 
-			this->Destroy();
+		UActionComponent* ActionComp = Cast<UActionComponent>(OtherActor->GetComponentByClass(UActionComponent::StaticClass()));
+		
+		if (ActionComp && ActionComp->ActiveGamePlayTags.HasTag(ParryTag))
+		{
+			MovementComp->Velocity = -MovementComp->Velocity;
+
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
 		}
+		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+		{
+			if (ActionComp)
+			{
+				ActionComp->AddAction(GetInstigator(), BurnEffect);
+			}
+			Destroy();
+		}
+		
 	}
 }
 
-// Called every frame
-void ASProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
 
 

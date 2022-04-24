@@ -10,7 +10,11 @@ public class SecondCourse : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
+<<<<<<< Updated upstream
 		PublicDependencyModuleNames.AddRange(new string[] { "Niagara", "NavigationSystem" });
+=======
+		PublicDependencyModuleNames.AddRange(new string[] { "Niagara", "NavigationSystem", "GameplayTasks","UMG","GameplayTags" });
+>>>>>>> Stashed changes
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

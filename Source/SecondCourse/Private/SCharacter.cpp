@@ -8,6 +8,7 @@
 #include <GameFramework/Character.h>
 #include "SInteractionComponent.h"
 #include "SAttributeComponent.h"
+#include "ActionComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -26,6 +27,8 @@ ASCharacter::ASCharacter()
 
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
+	ActionComp = CreateDefaultSubobject<UActionComponent>("ActionComp");
+
 	//setup variables
 
 	bUseControllerRotationYaw = false;
@@ -34,6 +37,21 @@ ASCharacter::ASCharacter()
 
 }
 
+<<<<<<< Updated upstream
+=======
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+}
+
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	return CameraComp->GetComponentLocation();
+}
+
+>>>>>>> Stashed changes
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
@@ -62,6 +80,16 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Action1", IE_Pressed, this, &ASCharacter::Action1);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this->InteractionComp, &USInteractionComponent::PrimaryInteract);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
+
+}
+
+
+void ASCharacter::HealSelf(float Amount /* = 100 */)
+{
+	AttributeComp->ApplyHealthChange(this, Amount);
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -79,21 +107,23 @@ void ASCharacter::MoveRight(float Value)
 	Controllrotation.Roll = 0.0f;
 
 	FVector RightVector =FRotationMatrix(Controllrotation).GetScaledAxis(EAxis::Y);
-
-
 	AddMovementInput(RightVector, Value);
+}
+
+void ASCharacter::SprintStart()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ASCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
 }
 
 void ASCharacter::Action1()
 {
 	
-
-	if (ProjectileClass) 
-	{
-		PlayAnimMontage(AttackAnim);
-
-		GetWorldTimerManager().SetTimer(TimerHandle_Attack1, this, &ASCharacter::TimeEllaps, 0.2f );
-	}
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 	
 }
 
@@ -137,4 +167,17 @@ void ASCharacter::TimeEllaps()
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
+<<<<<<< Updated upstream
+=======
+void ASCharacter::OnHealthChanged(USAttributeComponent* OwningComp, AActor* InstigatorActor, float NewHealth, float Delta)
+{
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+		SetLifeSpan(5.0f);
+	}
+}
+
+>>>>>>> Stashed changes
 

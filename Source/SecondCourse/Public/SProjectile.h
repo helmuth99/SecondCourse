@@ -4,11 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include <GameplayTagContainer.h>
+
 #include "SProjectile.generated.h"
 
 class USphereComponent;
 class UProjectileMovementComponent;
-class UNiagaraComponent;
+class UNiagaraComponent; 
+	class USActionEffect;
 
 UCLASS()
 class SECONDCOURSE_API ASProjectile : public AActor
@@ -30,15 +33,20 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* EffectComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float DamageAmount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag ParryTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	TSubclassOf<USActionEffect> BurnEffect;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
 
 };

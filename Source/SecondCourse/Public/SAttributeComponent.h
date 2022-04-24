@@ -30,13 +30,26 @@ protected:
 	
 
 public:	
+<<<<<<< Updated upstream
+=======
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	static USAttributeComponent* GetAttributes(AActor* FromActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes", meta = (DisplayName = "IsAlive"))
+	static bool IsOwningActorAlive(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
+
+>>>>>>> Stashed changes
 	USAttributeComponent();
 
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-	bool ApplyHealthChange(float delta);
+	bool ApplyHealthChange(AActor* InstigatorActor, float delta);
 
-		
+	bool KillSelf(AActor* InstigatorActor);
 };
